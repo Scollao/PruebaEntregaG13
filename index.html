@@ -27,18 +27,35 @@
           if (!iframe || !iframe.contentWindow) return;
 
           const w = iframe.contentWindow;
-          const Plotly = w.Plotly;
-          if (!Plotly || !Plotly.Fx) return;
-
-          const graphDiv = w.document.querySelector(".plotly-graph-div");
+          const doc = w.document;
+          const graphDiv = doc.querySelector(".plotly-graph-div");
           if (!graphDiv) return;
 
-          // Simula un click de Plotly en esa barra
-          Plotly.Fx.click(graphDiv, {
-            curveNumber: 0,
-            pointNumber: barIndex
+          // Buscar las barras en el SVG que genera Plotly
+          // (para la mayoría de gráficos de barras: g.plot .bars .point)
+          const barNodes = graphDiv.querySelectorAll("g.plot .bars .point, .bars .point");
+
+          if (!barNodes || barNodes.length === 0) {
+            console.warn("No se encontraron nodos de barras en el gráfico");
+            return;
+          }
+
+          const bar = barNodes[barIndex];
+          if (!bar) {
+            console.warn("No existe barra con índice", barIndex);
+            return;
+          }
+
+          // Crear y despachar un evento de click como si fuera el mouse
+          const evt = new MouseEvent("click", {
+            bubbles: true,
+            cancelable: true,
+            view: w
           });
+
+          bar.dispatchEvent(evt);
         }
+
 
         function accelToChamp(norm) {
           const minNorm = 8;   // ajusta si hace falta
