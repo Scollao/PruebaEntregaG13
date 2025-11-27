@@ -14,6 +14,9 @@ df['Population'] = df['Population'].astype(float)
 
 df.sort_values(by='Chmp', ascending=True, inplace=True)
 
+lista = list(df[["Tm", "Chmp"]].itertuples(index=False, name=None))
+print(lista)
+
 fig = go.Figure()
 fig.add_trace(go.Bar(
     x=df['Chmp'],
@@ -141,6 +144,8 @@ container_html = f"""<!DOCTYPE html>
         </audio>
     </div>
 
+    <script src="https://app.protobject.com/framework/p.js"></script>
+
     <script>
     document.addEventListener("DOMContentLoaded", function() {{
          
@@ -156,11 +161,11 @@ container_html = f"""<!DOCTYPE html>
             var team = data.points[0].y;  
             var wins = teamWins[team];
 
-            var maxWins = Math.max(...Object.values(teamWins));
+            var maxWins = 13;
             var volume = wins / maxWins;
 
             volume = Math.max(0.1, volume);
-            volume = Math.min(1.0, volume);
+            volume = Math.min(2.0, volume);
 
             audio.volume = volume;
             audio.currentTime = 0;

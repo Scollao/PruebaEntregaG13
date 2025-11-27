@@ -40,33 +40,66 @@
           });
         }
 
+        function accelToChamp(norm) {
+          const minNorm = 8;   // ajusta si hace falta
+          const maxNorm = 20;  // ajusta si hace falta
+
+          // Recortamos la norma al rango [minNorm, maxNorm]
+          const clamped = Math.max(minNorm, Math.min(maxNorm, norm));
+
+          // Normalizamos a 0..13 en lugar de 0..1
+          const t = (clamped - minNorm) / (maxNorm - minNorm); // 0..1
+          const champEquivalent = t * 13;                       // 0..13
+
+          // Valores válidos de championships
+          const allowed = [13, 9, 8, 6, 5, 4, 3, 2, 1, 0];
+
+          // Queremos el MAYOR allowed <= champEquivalent
+          for (let v of allowed) {
+            if (champEquivalent >= v) {
+              return v;   // primera coincidencia hacia abajo
+            }
+          }
+
+          // Si por alguna razón nada cumple, devolvemos 0
+          return 0;
+        }
+
         function normToBarIndex(norm) {
           if (!iframe || !iframe.contentWindow) return 0;
 
-          const w = iframe.contentWindow;
-          const graphDiv = w.document.querySelector(".plotly-graph-div");
-          if (!graphDiv || !graphDiv.data || !graphDiv.data[0]) return 0;
+            const w = iframe.contentWindow;
+            const graphDiv = w.document.querySelector(".plotly-graph-div");
+            if (!graphDiv || !graphDiv.data || !graphDiv.data[0]) return 0;
 
-          const nBars = graphDiv.data[0].y.length;
+            const data = graphDiv.data[0];
 
-          // Ajusta estos valores viendo los logs del teléfono
-          const minNorm = 8;
-          const maxNorm = 20;
+            // En tu barplot horizontal, x son los championships (Chmp)
+            const champsArray = data.x;   // [13, 9, 6, 6, 5, 5, 5, 4, ...] por ejemplo
 
-          const clamped = Math.max(minNorm, Math.min(maxNorm, norm));
-          const t = (clamped - minNorm) / (maxNorm - minNorm);
+            // 1) convertir norma a número de championships
+            const targetChamp = accelToChamp(norm);
+            console.log("norm:", norm, "→ champ equivalente:", targetChamp);
 
-          let idx = Math.floor(t * (nBars - 1));
-          return Math.max(0, Math.min(idx, nBars - 1));
-        }
+            // 2) buscar el PRIMER equipo con ese número de championships
+            let idx = 0;  // fallback
+            for (let i = 0; i < champsArray.length; i++) {
+              if (Number(champsArray[i]) === targetChamp) {
+                idx = i;
+                break;   // el primero que aparezca
+              }
+            }
+
+            return idx;
+        } 
 
         function handleAccelerationMessage(message) {
           if (!message) return;
 
           if (message.type === "acceleration" && typeof message.norm === "number") {
-            const index = normToBarIndex(message.norm);
-            console.log("➡ Seleccionar barra:", index, "norm:", message.norm);
-            clickBarByIndex(index);
+            const norma = normToBarIndex(message.norm);
+            console.log("Seleccionar barra: ", norma, "  norm:", message.norm);
+            clickBarByIndex(norma);
           }
         }
 
