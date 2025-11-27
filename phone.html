@@ -9,20 +9,29 @@
     <script src="https://app.protobject.com/framework/p.js"></script>
     <script src="config.js"></script>
     <h1>Arduino servo control</h1>
+
     <script>
-        Protobject.Acceleration.start(300); //generate events each 300 ms, test and get difference
-        Protobject.Acceleration.onData((data) => {
-            console.log("X: " + data.x + "; Y: " + data.y + "; Z: " + data.z);
+      // Empezar a leer aceleración cada 300ms
+      Protobject.Acceleration.start(300);
 
-            const normal = Math.sqrt(data.x * data.x + data.y * data.y + data.z * data.z);
+      Protobject.Acceleration.onData((data) => {
+        console.log("X: " + data.x + "; Y: " + data.y + "; Z: " + data.z);
 
-            Protobject.send({
-            type: "acceleration",
-            norm: normal
-        });
-        
-        });
-        // use umbral, get highest value of the curve within the window
+        // norma del vector (magnitud)
+        const norm = Math.sqrt(
+          data.x * data.x +
+          data.y * data.y +
+          data.z * data.z
+        );
+
+        // 👉 ENVIAR al index.html (Knob) usando la API oficial
+        Protobject.Core.send({
+          type: "acceleration",
+          norm: norm
+        }).to("index.html");
+      });
+
+      // (opcional) podrías usar umbrales acá si quieres filtrar sacudidas
     </script>
   </body>
 </html>
