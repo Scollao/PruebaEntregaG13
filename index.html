@@ -35,14 +35,25 @@
             return;
           }
 
-          // Buscar una barra que tenga data-point-number = barIndex
-          const selector = `[data-point-number="${barIndex}"]`;
-          const bar = graphDiv.querySelector(selector);
+          // Obtener TODAS las barras que tengan data-point-number
+          const barNodes = graphDiv.querySelectorAll("[data-point-number]");
+          console.log("🔎 Barras encontradas con data-point-number:", barNodes.length);
 
-          if (!bar) {
-            console.warn("No se encontró barra con data-point-number =", barIndex);
+          if (!barNodes.length) {
+            console.warn("No se encontraron elementos con data-point-number");
             return;
           }
+
+          // Aseguramos que el índice no se salga del rango
+          const safeIndex = Math.max(0, Math.min(barIndex, barNodes.length - 1));
+          const bar = barNodes[safeIndex];
+
+          if (!bar) {
+            console.warn("No existe barra con índice", safeIndex);
+            return;
+          }
+
+          console.log("🖱 Haciendo click en barra con index:", safeIndex, "elemento:", bar);
 
           // Crear y despachar un evento de click como si fuera el mouse
           const evt = new MouseEvent("click", {
@@ -53,6 +64,7 @@
 
           bar.dispatchEvent(evt);
         }
+
         // 👆 HASTA AQUÍ EL CAMBIO
 
         function accelToChamp(norm) {
