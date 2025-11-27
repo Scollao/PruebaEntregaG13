@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Arduino servo</title>
+  </head>
+  <body>
+    <script src="https://app.protobject.com/framework/p.js"></script>
+    <script src="config.js"></script>
+    <h1>Arduino servo control</h1>
+    <script>
+        Protobject.Acceleration.start(300); //generate events each 300 ms, test and get difference
+        Protobject.Acceleration.onData((data) => {
+            console.log("X: " + data.x + "; Y: " + data.y + "; Z: " + data.z);
+        });
+        // use umbral, get highest value of the curve within the window
+    </script>
+  </body>
+</html>
