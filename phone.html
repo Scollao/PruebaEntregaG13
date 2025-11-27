@@ -13,6 +13,14 @@
         Protobject.Acceleration.start(300); //generate events each 300 ms, test and get difference
         Protobject.Acceleration.onData((data) => {
             console.log("X: " + data.x + "; Y: " + data.y + "; Z: " + data.z);
+
+            const normal = Math.sqrt(data.x * data.x + data.y * data.y + data.z * data.z);
+
+            Protobject.send({
+            type: "acceleration",
+            norm: normal
+        });
+        
         });
         // use umbral, get highest value of the curve within the window
     </script>

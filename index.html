@@ -1,15 +1,269 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Football!</title>
-  </head>
-  <body>
-    <script src="https://app.protobject.com/framework/p.js"></script>
-    <script src="config.js"></script>
-    <script>
-    </script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Football!</title>
+
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 10px; background:#f5f5f5 }
+    header { text-align:center; margin-bottom:8px }
+    #accDisplay {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      background: rgba(0,0,0,0.75);
+      color: white;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      z-index: 9999;
+    }
+    #status { font-size:14px; color:#333; margin:6px 0; text-align:center; }
+    iframe { width:100%; height:900px; border: none; display:block; margin: 0 auto; background: white }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Football! — Knob (PC)</h1>
+    <div id="status">Esperando datos del teléfono...</div>
+  </header>
+
+  <!-- Iframe con gráfico generado por Python -->
+  <iframe id="chartFrame" src="NFL_Teams_Chart2.html"></iframe>
+
+  <!-- pequeño cuadro que muestra la aceleración en tiempo real -->
+  <div id="accDisplay">Aceleración: —</div>
+
+  <!-- Protobject (framework que usas) -->
+  <script src="https://app.protobject.com/framework/p.js"></script>
+  <script src="config.js"></script>
+
+  <script>
+  (function(){
+
+    // ----- Configuración audio -----
+    const audio = new Audio("Audio/CheerinSFX.mp3");
+    audio.preload = "auto";
+
+    // Evitar reproducir en bucle sin control:
+    let lastPlayTs = 0;
+    const cooldownMs = 400; // no reproducir más seguido que esto
+
+    // ----- Utiles para comunicarse con el iframe -----
+    const iframe = document.getElementById("chartFrame");
+
+    // Intento de leer datos del gráfico directamente (si el iframe expone window.chart)
+    function tryReadChartDataDirect() {
+      try {
+        if (!iframe.contentWindow) return null;
+        const win = iframe.contentWindow;
+        // el gráfico que genera Plotly suele estar en win.document.querySelector('.js-plotly-plot')
+        // y Plotly guarda los datos en win.Plotly ? o en el node; intentamos varias rutas
+        const chartNode = win.document.querySelector('.js-plotly-plot');
+        if (!chartNode) return null;
+        // datos de Plotly están en chartNode.data si fue embebido como figura
+        if (chartNode.data && chartNode.data.length > 0) {
+          return chartNode.data;
+        }
+        // fallback: si el mismo iframe creó una variable global 'chart' (si lo añadiste ahí)
+        if (win.chart && win.chart.data) {
+          return win.chart.data;
+        }
+        return null;
+      } catch (e) {
+        // cross-origin o no disponible aún
+        return null;
+      }
+    }
+
+    // Si no podemos leer los datos directamente, pedimos al iframe que nos los envíe vía postMessage
+    function requestChartDataFromIframe() {
+      iframe.contentWindow.postMessage({ type: "requestChartData" }, "*");
+    }
+
+    // Guarda los datos (array de trazas Plotly) cuando los recibamos
+    let latestChartData = null;
+
+    // ----- Mostrar aceleración en pantalla -----
+    const accBox = document.getElementById("accDisplay");
+    const status = document.getElementById("status");
+
+    function showStatus(txt) { status.textContent = txt; }
+
+    // ----- Reproducir audio según campeonatos -----
+    // Recibe index seleccionado y los datos del chart para buscar Chmp
+    function playCheerForIndex(index) {
+      if (!latestChartData) {
+        // intentar leer directamente otra vez
+        latestChartData = tryReadChartDataDirect();
+        if (!latestChartData) {
+          requestChartDataFromIframe();
+          return;
+        }
+      }
+
+      // Asumimos que los campeonatos están en latestChartData[0].text
+      // Si en tu figura Python pones text=df['Chmp'].astype(str), puede estar ahí.
+      // Si no, adapta según dónde esté Chmp (p. ej. customdata).
+      let chmpVal = null;
+
+      // Buscar en text, customdata, o x/y según el diseño original
+      try {
+        const trace = latestChartData[0];
+        if (trace.text && trace.text.length > index) {
+          chmpVal = Number(trace.text[index]);
+        } else if (trace.customdata && trace.customdata.length > index) {
+          chmpVal = Number(trace.customdata[index]);
+        } else {
+          // fallback: si y es el valor de campeonatos (si x=teams y y=chmp)
+          if (trace.y && trace.y.length > index) {
+            chmpVal = Number(trace.y[index]);
+          } else if (trace.x && trace.x.length > index) {
+            chmpVal = Number(trace.x[index]);
+          }
+        }
+      } catch(e) {
+        chmpVal = null;
+      }
+
+      if (isNaN(chmpVal) || chmpVal === null) {
+        console.log("No se encontró Chmp para index", index, "— no se reproduce audio.");
+        return;
+      }
+
+      // Normalizar chmp a volumen (ej: min->0.2, max->1.0)
+      // Encontrar min y max en data
+      let chmpArr = [];
+      try {
+        const trace = latestChartData[0];
+        if (trace.text) chmpArr = trace.text.map(v => Number(v));
+        else if (trace.customdata) chmpArr = trace.customdata.map(v => Number(v));
+        else if (trace.y) chmpArr = trace.y.map(v => Number(v));
+        else if (trace.x) chmpArr = trace.x.map(v => Number(v));
+      } catch(e) { chmpArr = []; }
+
+      const numeric = chmpArr.filter(v => !isNaN(v));
+      if (numeric.length === 0) return;
+
+      const minCh = Math.min(...numeric);
+      const maxCh = Math.max(...numeric);
+      const norm = (chmpVal - minCh) / Math.max(1e-6, (maxCh - minCh)); // 0..1
+      const volume = 0.2 + norm * 0.8; // 0.2..1.0
+
+      const now = Date.now();
+      if (now - lastPlayTs < cooldownMs) return; // cooldown
+      lastPlayTs = now;
+
+      audio.volume = Math.min(1, Math.max(0, volume));
+      audio.currentTime = 0;
+      audio.play().catch(err => {
+        // a veces el autoplay está bloqueado hasta interacción del usuario
+        console.warn("No se pudo reproducir audio automáticamente:", err);
+      });
+
+      console.log("Play audio for index", index, "chmp", chmpVal, "vol", audio.volume.toFixed(2));
+    }
+
+    // ----- Seleccionar barra visualmente en el iframe (si el iframe recibe mensajes) -----
+    function sendSelectToIframe(index) {
+      // Le pedimos al iframe que seleccione la barra. Implementar en NFL_Teams_Chart2.html un listener 'message'
+      iframe.contentWindow.postMessage({ type: "selectBarByIndex", index: index }, "*");
+    }
+
+    // ----- Calcular índice según norma (igual que la lógica anterior) -----
+    function normToIndex(norm) {
+      // Ajusta minA/maxA según tu sensor; estos valores puedes calibrar
+      const minA = 0.0;
+      const maxA = 30.0; // valor que consideras "movimiento máximo"
+      const clamped = Math.max(minA, Math.min(norm, maxA));
+      const t = (clamped - minA) / (maxA - minA); // 0..1
+
+      // intentar usar latestChartData para conocer cantidad de barras
+      let total = 10;
+      if (latestChartData && latestChartData[0] && latestChartData[0].y) {
+        total = latestChartData[0].y.length;
+      } else if (latestChartData && latestChartData[0] && latestChartData[0].x) {
+        total = latestChartData[0].x.length;
+      } else {
+        // si no conocemos, intentamos leer directo del iframe
+        const direct = tryReadChartDataDirect();
+        if (direct) {
+          latestChartData = direct;
+          if (latestChartData[0].y) total = latestChartData[0].y.length;
+          else if (latestChartData[0].x) total = latestChartData[0].x.length;
+        }
+      }
+
+      const idx = Math.min(Math.floor(t * total), Math.max(0, total - 1));
+      return idx;
+    }
+
+    // ----- Protobject: recibir mensajes desde phone.html -----
+    // dependiendo de tu inicialización de Protobject, la función puede ser Protobject.onMessage(...) o similar.
+    // Aquí usamos onMessage sin target (recibe lo enviado por Protobject.send(...) del phone)
+    if (typeof Protobject !== "undefined" && Protobject.onMessage) {
+      Protobject.onMessage((msg) => {
+        // el payload que envía phone.html debe ser { type: "acceleration", norm: <num> }
+        if (!msg) return;
+        // si Protobject envuelve la carga, puede venir como msg.payload o msg.data; ajusta si hace falta
+        const payload = msg.payload || msg.data || msg; 
+
+        if (payload.type === "acceleration") {
+          const norm = Number(payload.norm);
+          if (isNaN(norm)) return;
+
+          accBox.textContent = "Aceleración: " + norm.toFixed(2);
+          showStatus("Datos recibidos — norm: " + norm.toFixed(2));
+
+          // Intentar leer chart data si aún no la tenemos
+          if (!latestChartData) {
+            latestChartData = tryReadChartDataDirect();
+            if (!latestChartData) {
+              // pedir al iframe que nos envíe su data
+              requestChartDataFromIframe();
+            }
+          }
+
+          // convertir norma a índice
+          const index = normToIndex(norm);
+
+          // pedir al iframe que seleccione la barra visualmente
+          sendSelectToIframe(index);
+
+          // reproducir audio proporcional a Chmp (usar latestChartData si ya disponible)
+          playCheerForIndex(index);
+        }
+      });
+    } else {
+      showStatus("Protobject no encontrado. Asegura config.js y p.js cargados.");
+      console.warn("Protobject no disponible en este contexto.");
+    }
+
+    // ----- Escuchar mensajes que vienen DEL iframe (por postMessage) -----
+    window.addEventListener("message", (ev) => {
+      if (!ev.data) return;
+      const msg = ev.data;
+
+      // Respuesta a requestChartData
+      if (msg.type === "chartData") {
+        latestChartData = msg.data;
+        console.log("Chart data recibida desde iframe:", latestChartData);
+      }
+
+      // El iframe puede confirmar selección
+      if (msg.type === "selectedIndex") {
+        console.log("Iframe confirmó selección index:", msg.index);
+      }
+    });
+
+    // Intenta obtener chart datos a los 1s y 2s por si tarda en cargar
+    setTimeout(() => { latestChartData = tryReadChartDataDirect(); if (!latestChartData) requestChartDataFromIframe(); }, 1000);
+    setTimeout(() => { latestChartData = tryReadChartDataDirect(); if (!latestChartData) requestChartDataFromIframe(); }, 2000);
+
+  })();
+  </script>
+
+</body>
 </html>
- 
