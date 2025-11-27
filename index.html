@@ -23,26 +23,24 @@
 
         const iframe = document.getElementById("nfl-frame");
 
+        // 👇 SOLO CAMBIAMOS ESTA FUNCIÓN
         function clickBarByIndex(barIndex) {
           if (!iframe || !iframe.contentWindow) return;
 
-          const w = iframe.contentWindow;
+          const w   = iframe.contentWindow;
           const doc = w.document;
           const graphDiv = doc.querySelector(".plotly-graph-div");
-          if (!graphDiv) return;
-
-          // Buscar las barras en el SVG que genera Plotly
-          // (para la mayoría de gráficos de barras: g.plot .bars .point)
-          const barNodes = graphDiv.querySelectorAll("g.plot .bars .point, .bars .point");
-
-          if (!barNodes || barNodes.length === 0) {
-            console.warn("No se encontraron nodos de barras en el gráfico");
+          if (!graphDiv) {
+            console.warn("No se encontró .plotly-graph-div dentro del iframe");
             return;
           }
 
-          const bar = barNodes[barIndex];
+          // Buscar una barra que tenga data-point-number = barIndex
+          const selector = `[data-point-number="${barIndex}"]`;
+          const bar = graphDiv.querySelector(selector);
+
           if (!bar) {
-            console.warn("No existe barra con índice", barIndex);
+            console.warn("No se encontró barra con data-point-number =", barIndex);
             return;
           }
 
@@ -55,11 +53,11 @@
 
           bar.dispatchEvent(evt);
         }
-
+        // 👆 HASTA AQUÍ EL CAMBIO
 
         function accelToChamp(norm) {
-          const minNorm = 8;   // ajusta si hace falta
-          const maxNorm = 20;  // ajusta si hace falta
+          const minNorm = 10;   // ajusta si hace falta
+          const maxNorm = 50;  // ajusta si hace falta
 
           // Recortamos la norma al rango [minNorm, maxNorm]
           const clamped = Math.max(minNorm, Math.min(maxNorm, norm));
@@ -85,29 +83,29 @@
         function normToBarIndex(norm) {
           if (!iframe || !iframe.contentWindow) return 0;
 
-            const w = iframe.contentWindow;
-            const graphDiv = w.document.querySelector(".plotly-graph-div");
-            if (!graphDiv || !graphDiv.data || !graphDiv.data[0]) return 0;
+          const w = iframe.contentWindow;
+          const graphDiv = w.document.querySelector(".plotly-graph-div");
+          if (!graphDiv || !graphDiv.data || !graphDiv.data[0]) return 0;
 
-            const data = graphDiv.data[0];
+          const data = graphDiv.data[0];
 
-            // En tu barplot horizontal, x son los championships (Chmp)
-            const champsArray = data.x;   // [13, 9, 6, 6, 5, 5, 5, 4, ...] por ejemplo
+          // En tu barplot horizontal, x son los championships (Chmp)
+          const champsArray = data.x;   // [13, 9, 6, 6, 5, 5, 5, 4, ...] por ejemplo
 
-            // 1) convertir norma a número de championships
-            const targetChamp = accelToChamp(norm);
-            console.log("norm:", norm, "→ champ equivalente:", targetChamp);
+          // 1) convertir norma a número de championships
+          const targetChamp = accelToChamp(norm);
+          console.log("norm:", norm, "→ champ equivalente:", targetChamp);
 
-            // 2) buscar el PRIMER equipo con ese número de championships
-            let idx = 0;  // fallback
-            for (let i = 0; i < champsArray.length; i++) {
-              if (Number(champsArray[i]) === targetChamp) {
-                idx = i;
-                break;   // el primero que aparezca
-              }
+          // 2) buscar el PRIMER equipo con ese número de championships
+          let idx = 0;  // fallback
+          for (let i = 0; i < champsArray.length; i++) {
+            if (Number(champsArray[i]) === targetChamp) {
+              idx = i;
+              break;   // el primero que aparezca
             }
+          }
 
-            return idx;
+          return idx;
         } 
 
         function handleAccelerationMessage(message) {
@@ -131,6 +129,7 @@
     </script>
   </body>
 </html>
+
 
 
  
