@@ -28,47 +28,15 @@
           if (!iframe || !iframe.contentWindow) return;
 
           const w = iframe.contentWindow;
-          const doc = w.document;
-          const graphDiv = doc.querySelector(".plotly-graph-div");
-          if (!graphDiv) {
-            console.warn("No se encontró .plotly-graph-div");
-            return;
-          }
 
-          // Obtener la figura completa
-          const gd = graphDiv;
-          const fullData = gd.data[0];
-
-          // Si no hay data, no podemos continuar
-          if (!fullData || !fullData.x || !fullData.y) {
-            console.warn("No hay datos en el gráfico");
-            return;
-          }
-
-          // Simular el objeto "data" que Plotly pasa al evento plotly_click
-          const fakeEvent = {
-            points: [
-              {
-                curveNumber: 0,
-                pointNumber: barIndex,
-                x: fullData.x[barIndex],
-                y: fullData.y[barIndex],
-                data: fullData
-              }
-            ]
-          };
-
-          console.log("🎯 Disparando handler plotly_click con:", fakeEvent);
-
-          // Ejecutar todos los callbacks del plotly_click registrados en el gráfico
-          const clickHandlers = gd._internalHandlers && gd._internalHandlers.plotly_click;
-
-          if (clickHandlers && clickHandlers.length > 0) {
-            clickHandlers.forEach(handler => handler(fakeEvent));
+          if (typeof w.playCrowdForIndex === "function") {
+            console.log("🎯 Llamando playCrowdForIndex(", barIndex, ")");
+            w.playCrowdForIndex(barIndex);
           } else {
-            console.warn("No se encontraron handlers de plotly_click");
+            console.warn("playCrowdForIndex no está definida aún en el iframe");
           }
         }
+
 
         // 👆 HASTA AQUÍ EL CAMBIO
 

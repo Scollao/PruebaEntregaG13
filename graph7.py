@@ -111,6 +111,8 @@ for _, row in df.iterrows():
 
 plotly_html = fig.to_html(config={'staticPlot': False}, include_plotlyjs=True)
 
+team_wins_json = json.dumps(dict(zip(df['Tm'], df['Chmp'])))
+
 container_html = f"""<!DOCTYPE html>
 <html>
 <head>
@@ -139,38 +141,70 @@ container_html = f"""<!DOCTYPE html>
 <body>
     <div class="chart-container">
         {plotly_html}
-        <audio id = "CrowdAudio" controls>
+        <audio id="CrowdAudio" controls>
             <source src="Audio/CheeringSFX.mp3" type="audio/mpeg">
         </audio>
     </div>
 
-    <script src="https://app.protobject.com/framework/p.js"></script>
-
     <script>
     document.addEventListener("DOMContentLoaded", function() {{
-         
-        var audio = document.getElementById("CrowdAudio");
+
+        var audio   = document.getElementById("CrowdAudio");
         var graphDiv = document.querySelector(".plotly-graph-div");
 
-        var teamWins = {json.dumps(dict(zip(df['Tm'], df['Chmp'])))};
+        // Diccionario equipo → championships
+        var teamWins = {team_wins_json};
 
-        graphDiv.on('plotly_click', function(data) {{
-
-            if (!data.points.length) return;
-
-            var team = data.points[0].y;  
-            var wins = teamWins[team];
-
+        // ----------------------------
+        //  función interna
+        // ----------------------------
+        function playCrowdForTeam(team) {{
+            var wins = teamWins[team] || 0;
             var maxWins = 13;
-            var volume = wins / maxWins;
 
-            volume = Math.max(0.1, volume);
-            volume = Math.min(2.0, volume);
+            var volume = wins / maxWins;
+            volume = Math.max(0.1, Math.min(volume, 1.0));
 
             audio.volume = volume;
             audio.currentTime = 0;
             audio.play();
+        }}
+
+        // ----------------------------------------------------------
+        // FUNCIÓN GLOBAL accesible desde index.html:
+        // Llama audio + hover real sobre la barra correspondiente
+        // ----------------------------------------------------------
+        window.playCrowdForIndex = function(idx) {{
+
+            if (!graphDiv || !graphDiv.data || !graphDiv.data[0]) return;
+
+            var data = graphDiv.data[0];
+            var teams = data.y;
+
+            if (!teams || idx < 0 || idx >= teams.length) return;
+
+            var team = teams[idx];
+
+            // hover visual (opcional)
+            if (window.Plotly && Plotly.Fx && typeof Plotly.Fx.hover === "function") {{
+                Plotly.Fx.hover(graphDiv, {{
+                    curveNumber: 0,
+                    pointNumber: idx
+                }});
+            }}
+
+            playCrowdForTeam(team);
+        }};
+
+        // ----------------------------------------------------------
+        // Click real del usuario (se mantiene la funcionalidad)
+        // ----------------------------------------------------------
+        graphDiv.on('plotly_click', function(data) {{
+            if (!data.points.length) return;
+            var team = data.points[0].y;
+            playCrowdForTeam(team);
         }});
+
     }});
     </script>
 </body>
