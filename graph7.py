@@ -176,16 +176,35 @@ container_html = f"""<!DOCTYPE html>
         // ----------------------------------------------------------
         window.playCrowdForIndex = function(idx) {{
 
+            console.log("🔊 playCrowdForIndex llamada con idx =", idx);
+
             if (!graphDiv || !graphDiv.data || !graphDiv.data[0]) return;
 
-            var data = graphDiv.data[0];
+            var data  = graphDiv.data[0];
             var teams = data.y;
 
             if (!teams || idx < 0 || idx >= teams.length) return;
 
             var team = teams[idx];
 
-            // hover visual (opcional)
+            // ===============================
+            // 1) Colorear la barra seleccionada
+            // ===============================
+            var n = teams.length;
+            var baseColor     = "mediumseagreen";
+            var selectedColor = "orange";
+
+            // Creamos un array de colores: todos verdes salvo la elegida
+            var colors = new Array(n).fill(baseColor);
+            colors[idx] = selectedColor;
+
+            if (window.Plotly) {{
+                Plotly.restyle(graphDiv, {{ "marker.color": [colors] }}, [0]);
+            }}
+
+            // ===============================
+            // 2) (Opcional) Hover visual
+            // ===============================
             if (window.Plotly && Plotly.Fx && typeof Plotly.Fx.hover === "function") {{
                 Plotly.Fx.hover(graphDiv, {{
                     curveNumber: 0,
@@ -193,17 +212,12 @@ container_html = f"""<!DOCTYPE html>
                 }});
             }}
 
+            // ===============================
+            // 3) AUDIO (igual que antes)
+            // ===============================
             playCrowdForTeam(team);
         }};
 
-        // ----------------------------------------------------------
-        // Click real del usuario (se mantiene la funcionalidad)
-        // ----------------------------------------------------------
-        graphDiv.on('plotly_click', function(data) {{
-            if (!data.points.length) return;
-            var team = data.points[0].y;
-            playCrowdForTeam(team);
-        }});
 
     }});
     </script>
