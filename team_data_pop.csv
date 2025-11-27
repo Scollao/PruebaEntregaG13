@@ -1,0 +1,33 @@
+Tm,From,To,W,L,T,W-L%,AV,Passer,Rusher,Receiver,Coaching,Yr plyf,W plyf,L plyf,W-L%.1,Chmp,SBwl,Conf,Div,City,Rank,Country,MLB,NBA_ABA,NFL_AAFC_AFL,NHL_WHA,MLS_NASL,CFL,Total,TV_Homes,Share,lat,lon,Population
+Arizona Cardinals,1920,2025,595,813,41,0.423,Fitzgerald,Hart,Anderson,Fitzgerald,Arians,11,7,10,0.412,2,0,1,8,Phoenix,12,USA,1,0,0,0,0,,1,2443190,1.972%,33.4484367,-112.074141,1696189
+Atlanta Falcons,1966,2025,399,514,6,0.437,Ryan,Ryan,Riggs,Jones,Smith,14,10,14,0.417,0,0,2,7,Atlanta,7,USA,2,0,0,0,2,,4,2830910,2.289%,33.7544657,-84.3898151,514457
+Baltimore Ravens,1996,2025,269,201,1,0.572,Lewis,Flacco,Lewis,Mason,Harbaugh,16,18,14,0.563,2,2,2,8,Baltimore,24,USA,3,1,5,0,0,1.0,10,1238890,1.002%,39.2908816,-76.610759,569931
+Buffalo Bills,1960,2025,489,505,8,0.492,Smith,Kelly,Thomas,Reed,Levy,24,21,22,0.488,2,0,4,16,Buffalo,44,USA,0,0,1,0,0,,1,637090,0.508%,42.8864,-78.8784,276617
+Carolina Panthers,1995,2025,220,266,1,0.453,Newton,Newton,Stewart,Smith,Rivera,8,9,8,0.529,0,0,2,6,Charlotte,19,USA,0,0,0,0,0,,0,1434510,1.161%,35.2272086,-80.8430827,943476 
+Chicago Bears,1920,2025,799,648,42,0.552,Payton,Cutler,Payton,Morris,Halas,27,17,20,0.459,9,1,2,24,Chicago,3,USA,6,6,11,6,3,,32,3472220,2.809%,41.8755616,-87.6244212,2679275
+Cincinnati Bengals,1968,2025,405,480,5,0.458,Munoz,Anderson,Dillon,Johnson,Lewis,16,10,16,0.385,0,0,3,12,Cincinnati,32,USA,5,0,0,0,0,,5,923110,0.746%,39.1014537,-84.5124602,309317
+Cleveland Browns,1946,2025,563,550,14,0.506,Matthews,Sipe,Brown,Newsome,Brown,30,17,22,0.436,8,0,0,23,Cleveland,17,USA,2,1,10,0,0,,13,1671030,1.353%,41.4996574,-81.6936772,361607
+Dallas Cowboys,1960,2025,570,425,6,0.573,Smith,Romo,Smith,Witten,Landry,36,36,31,0.537,5,5,8,26,Dallas,4,USA,1,1,6,1,1,,10,2963430,2.398%,32.7762719,-96.7968559,1299541
+Denver Broncos,1960,2025,519,474,10,0.523,Elway,Elway,Davis,Smith,Shanahan,23,23,20,0.535,3,3,8,15,Denver,15,USA,0,1,3,3,1,,8,1693230,1.370%,39.7392364,-104.984862,715522
+Detroit Lions,1930,2025,608,710,34,0.461,Sanders,Stafford,Sanders,Johnson,Fontes,19,9,15,0.375,4,0,0,10,Detroit,11,USA,4,3,4,11,0,,22,1943170,1.570%,42.3315509,-83.0466403,620376
+Green Bay Packers,1921,2025,812,605,38,0.573,Rodgers,Favre,Green,Driver,Lambeau,37,37,27,0.578,13,4,5,31,Green Bay,43,USA,0,0,1,0,0,,1,478970,0.382%,44.5133,-88.0133,106311
+Houston Texans,2002,2025,162,212,1,0.433,Watt,Schaub,Foster,Johnson,Kubiak,8,6,8,0.429,0,0,0,8,Houston,6,USA,2,2,2,2,2,,10,2678220,2.165%,29.7589382,-95.3676974,2296224
+Indianapolis Colts,1953,2025,567,510,8,0.526,Manning,Manning,James,Harrison,Dungy,29,23,25,0.479,4,2,4,21,Indianapolis,23,USA,0,3,1,0,0,,4,1274290,1.030%,39.7683331,-86.1583502,880621
+Jacksonville Jaguars,1995,2025,204,283,0,0.419,Smith,Brunell,Taylor,Smith,Coughlin,8,8,8,0.5,0,0,0,4,Jacksonville,35,USA,0,0,0,0,0,,0,743580,0.602%,30.3321838,-81.655651,971319
+Kansas City Chiefs,1960,2025,548,443,12,0.553,Shields,Mahomes,Charles,Kelce,Reid,27,26,22,0.542,5,4,7,18,Kansas City,29,USA,2,0,4,0,3,,9,1106930,0.896%,39.100105,-94.5781416,514417
+Las Vegas Raiders,1960,2025,510,482,11,0.514,Otto,Carr,Allen,Brown,Madden,23,25,20,0.556,3,3,5,16,Las Vegas,30,USA,0,0,0,1,0,0.0,1,919540,0.744%,36.1674263,-115.1484131,675125
+Los Angeles Chargers,1960,2025,497,495,11,0.501,Rivers,Rivers,Tomlinson,Gates,Gillman,21,12,20,0.375,1,0,1,15,Los Angeles,2,USA,8,12,3,3,9,,30,5735920,4.645%,34.0536909,-118.242766,3983543
+Los Angeles Rams,1937,2025,626,607,21,0.508,Olsen,Everett,Jackson,Bruce,McVay,33,27,29,0.482,4,2,5,22,Los Angeles,2,USA,8,12,3,3,9,,30,5735920,4.645%,34.0536909,-118.242766,3983543
+Miami Dolphins,1966,2025,504,411,4,0.551,Marino,Marino,Csonka,Duper,Shula,25,20,23,0.465,2,2,5,14,Miami,16,USA,2,3,2,2,0,,9,900890,0.727%,25.7741728,-80.19362,449514
+Minnesota Vikings,1961,2025,539,439,11,0.551,Eller,Tarkenton,Peterson,Carter,Grant,32,21,32,0.396,0,0,4,21,Minneapolis,14,USA,2,5,0,0,0,,7,1767950,1.431%,44.9772995,-93.2654692,425096
+New England Patriots,1960,2025,546,448,9,0.549,Brady,Brady,Cunningham,Morgan,Belichick,28,37,22,0.627,6,6,11,22,Boston,9,USA,10,18,6,7,0,,41,2457220,1.984%,42.3554334,-71.060511,651833
+New Orleans Saints,1967,2025,417,483,5,0.463,Brees,Brees,Kamara,Colston,Payton,14,10,13,0.435,1,1,1,9,New Orleans,41,USA,0,0,1,0,0,,1,678390,0.549%,29.9559145,-90.0730259,376971
+New York Giants,1925,2025,724,666,34,0.521,Taylor,Manning,Barber,Toomer,Owen,33,25,26,0.49,8,4,5,25,New York City,1,USA,35,4,9,11,6,,65,7726580,6.255%,40.7127281,-74.0060152,8467513
+New York Jets,1960,2025,433,562,8,0.435,Maynard,Namath,Martin,Maynard,Ewbank,14,12,13,0.48,1,1,1,4,New York City,1,USA,35,4,9,11,6,,65,7726580,6.255%,40.7127281,-74.0060152,8467513
+Philadelphia Eagles,1933,2025,641,639,27,0.501,Kelce,McNabb,McCoy,Carmichael,Reid,31,29,26,0.527,5,2,5,17,Philadelphia,5,USA,7,4,6,2,1,,20,2997990,2.425%,39.9527237,-75.1635262,1584989
+Pittsburgh Steelers,1933,2025,683,586,22,0.538,Roethlisberger,Roethlisberger,Harris,Ward,Noll,35,36,29,0.554,6,6,8,25,Pittsburgh,13,USA,5,1,6,5,0,,17,1242670,1.004%,40.4416941,-79.9900861,302971
+San Francisco 49ers,1946,2025,633,526,16,0.546,Rice,Montana,Gore,Rice,Seifert,30,39,25,0.609,5,5,8,23,San Francisco Bay Area,10,USA,7,6,7,0,3,,23,2512170,2.030%,37.7884969,-122.3558473,3215000
+Seattle Seahawks,1976,2025,404,374,1,0.519,Wilson,Wilson,Alexander,Largent,Carroll,20,17,19,0.472,1,1,3,11,Seattle,33,USA,0,1,1,1,2,,5,2363100,1.910%,47.6038321,-122.330062,762687
+Tampa Bay Buccaneers,1976,2025,321,457,1,0.413,Brooks,Winston,Wilder,Evans,Gruden,15,12,13,0.48,2,2,2,10,Tampa Bay,42,USA,0,0,1,0,0,,1,2221240,1.770%,27.95,-82.457,414547
+Tennessee Titans,1960,2025,479,518,6,0.48,Matthews,Moon,George,Givins,Fisher,25,17,23,0.425,2,0,1,11,Nashville,25,USA,0,0,0,0,0,,0,1170670,0.947%,36.1622767,-86.7742984,715884
+Washington Commanders,1932,2025,643,649,29,0.498,Green,Theismann,Riggins,Monk,Gibbs,26,25,21,0.543,5,3,5,16,Washington D.C.,8,USA,2,1,5,1,4,,13,2630640,2.096%,38.8950368,-77.0365427,678972
