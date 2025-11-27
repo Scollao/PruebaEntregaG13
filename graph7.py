@@ -136,7 +136,38 @@ container_html = f"""<!DOCTYPE html>
 <body>
     <div class="chart-container">
         {plotly_html}
+        <audio id = "CrowdAudio" controls>
+            <source src="Audio/CheeringSFX.mp3" type="audio/mpeg">
+        </audio>
     </div>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {{
+         
+        var audio = document.getElementById("CrowdAudio");
+        var graphDiv = document.querySelector(".plotly-graph-div");
+
+        var teamWins = {json.dumps(dict(zip(df['Tm'], df['Chmp'])))};
+
+        graphDiv.on('plotly_click', function(data) {{
+
+            if (!data.points.length) return;
+
+            var team = data.points[0].y;  
+            var wins = teamWins[team];
+
+            var maxWins = Math.max(...Object.values(teamWins));
+            var volume = wins / maxWins;
+
+            volume = Math.max(0.1, volume);
+            volume = Math.min(1.0, volume);
+
+            audio.volume = volume;
+            audio.currentTime = 0;
+            audio.play();
+        }});
+    }});
+    </script>
 </body>
 </html>"""
 

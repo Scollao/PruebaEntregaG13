@@ -164,41 +164,16 @@ container_html = f"""
 
 <div class="chart-container">
 
-    <!-- VIDEO PLAYER -->
-    <div style="margin-bottom: 20px;">
-        <video id="team-video" width="480" controls style="display:none; border:2px solid #333;">
-            <source id="team-video-source" src="" type="video/mp4">
-        </video>
-    </div>
-
     <!-- PLOTLY CHART -->
     {plotly_html}
-
+    <audio controls>
+        <source src="Audio/CheeringSFX.mp3" type="audio/mpeg">
+    </audio>
 </div>
-
-<script>
-const teamVideos = {VIDEO_DICT_JSON};
-
-const videoElement = document.getElementById("team-video");
-const videoSource = document.getElementById("team-video-source");
-
-// Show video when hovering a bar
-document.addEventListener("plotly_hover", function(evt) {{
-    const team = evt.points[0].y;
-
-    if (teamVideos[team]) {{
-        videoSource.src = teamVideos[team];
-        videoElement.style.display = "block";
-        videoElement.load();
-    }}
-}});
-
-// Hide video when not hovering
-document.addEventListener("plotly_unhover", function(evt) {{
-    videoElement.pause();
-    videoElement.style.display = "none";
-}});
-</script>
+    
+<audio controls>
+    <source src="Audio/CheeringSFX.mp3" type="audio/mpeg">
+</audio>
 
 </body>
 </html>
