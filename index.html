@@ -27,42 +27,47 @@
         function clickBarByIndex(barIndex) {
           if (!iframe || !iframe.contentWindow) return;
 
-          const w   = iframe.contentWindow;
+          const w = iframe.contentWindow;
           const doc = w.document;
           const graphDiv = doc.querySelector(".plotly-graph-div");
           if (!graphDiv) {
-            console.warn("No se encontró .plotly-graph-div dentro del iframe");
+            console.warn("No se encontró .plotly-graph-div");
             return;
           }
 
-          // Obtener TODAS las barras que tengan data-point-number
-          const barNodes = graphDiv.querySelectorAll("[data-point-number]");
-          console.log("🔎 Barras encontradas con data-point-number:", barNodes.length);
+          // Obtener la figura completa
+          const gd = graphDiv;
+          const fullData = gd.data[0];
 
-          if (!barNodes.length) {
-            console.warn("No se encontraron elementos con data-point-number");
+          // Si no hay data, no podemos continuar
+          if (!fullData || !fullData.x || !fullData.y) {
+            console.warn("No hay datos en el gráfico");
             return;
           }
 
-          // Aseguramos que el índice no se salga del rango
-          const safeIndex = Math.max(0, Math.min(barIndex, barNodes.length - 1));
-          const bar = barNodes[safeIndex];
+          // Simular el objeto "data" que Plotly pasa al evento plotly_click
+          const fakeEvent = {
+            points: [
+              {
+                curveNumber: 0,
+                pointNumber: barIndex,
+                x: fullData.x[barIndex],
+                y: fullData.y[barIndex],
+                data: fullData
+              }
+            ]
+          };
 
-          if (!bar) {
-            console.warn("No existe barra con índice", safeIndex);
-            return;
+          console.log("🎯 Disparando handler plotly_click con:", fakeEvent);
+
+          // Ejecutar todos los callbacks del plotly_click registrados en el gráfico
+          const clickHandlers = gd._internalHandlers && gd._internalHandlers.plotly_click;
+
+          if (clickHandlers && clickHandlers.length > 0) {
+            clickHandlers.forEach(handler => handler(fakeEvent));
+          } else {
+            console.warn("No se encontraron handlers de plotly_click");
           }
-
-          console.log("🖱 Haciendo click en barra con index:", safeIndex, "elemento:", bar);
-
-          // Crear y despachar un evento de click como si fuera el mouse
-          const evt = new MouseEvent("click", {
-            bubbles: true,
-            cancelable: true,
-            view: w
-          });
-
-          bar.dispatchEvent(evt);
         }
 
         // 👆 HASTA AQUÍ EL CAMBIO
